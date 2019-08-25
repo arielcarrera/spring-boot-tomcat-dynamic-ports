@@ -21,6 +21,12 @@ public class FilterConfig {
     	}
     }
     
+    public void removePortConfig(int port) {
+    	if(port > 0) {
+    		acceptedContextsByPort.remove(port);
+    	}
+    }
+    
     public Map<Integer, Set<String>> getConfig(){
     	return acceptedContextsByPort;
     }

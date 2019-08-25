@@ -2,6 +2,11 @@ package com.example.demo;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.catalina.LifecycleEvent;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.LifecycleState;
+import org.apache.catalina.Service;
 import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
@@ -41,6 +46,25 @@ public class AppConfig {
     
     public void addContextAllowed(FilterConfig filterConfig, int port, String context) {
     	filterConfig.addNewPortConfig(port, context);
+    }
+    
+    public void removePort(int port) {
+    	TomcatWebServer ts = (TomcatWebServer) server.getWebServer();
+    	Service service = ts.getTomcat().getService();
+    	synchronized (this) {
+	    	Connector[] findConnectors = service.findConnectors();
+	    	for (Connector connector : findConnectors) {
+				if (connector.getPort() == port) {
+					try {
+						connector.stop();
+						connector.destroy();
+						filterConfig.removePortConfig(port);
+					} catch (LifecycleException e) {
+						e.printStackTrace();
+					}
+				}
+	    	}
+    	}
     }
     
     private Connector createConnector(String schema, String domain, int port, boolean secure) {

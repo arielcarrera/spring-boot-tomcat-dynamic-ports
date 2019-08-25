@@ -38,4 +38,14 @@ public class TestController {
     	
         return new ResponseEntity<>("Added port:" + port, HttpStatus.OK);
     }
+    
+    @GetMapping("/admin/removePort")
+    ResponseEntity<String> removePort(@RequestParam Integer port) {
+    	if (port == null || port < 1) {
+    		return new ResponseEntity<>("Invalid Port" + port, HttpStatus.BAD_REQUEST);
+    	}
+    	config.removePort(port);
+    	
+        return new ResponseEntity<>("Removed port:" + port, HttpStatus.OK);
+    }
 }
